@@ -4,8 +4,7 @@
 #Scope description for this project can be found at: https://github.com/Yankeeland/duplicatePhotoRemover/blob/master/README.md
 #===================================
 
-import os
-#send2trash
+import os,send2trash, shutil
 
 #Load the UI
 
@@ -69,12 +68,17 @@ if DEBUG:
 picList = scanDir(directoryToScan)
 masterList = scanDir(masterDirectory)
 
+#reset the current working directory to the directory to scan
+os.chdir(directoryToScan)
+
 #scan through each file comparing the scanned directory to the master directory
 for picName in picList.keys():
     if picName in masterList.keys():
         if DEBUG: print("HOLY SMOKES! " + str(picList[picName][1]) + " " + str(masterList[picName][1]) )
         #check to see if they are the same size
         if picList[picName][1] == masterList[picName][1]:
+            # when a duplicate is found, present the user with a choice of which to keep,
+            # the choice should show the originating directory
             print("Found a duplicate by the name of " + picName)
             print("Which copy would you like to keep? (Choose an Number)")
             choice = 0
@@ -89,15 +93,14 @@ for picName in picList.keys():
                     done = True
                 elif choice == '2':
                     #delete the new picture (send to trash)
+                    send2trash.send2trash(picList[picName][0] + "\\" + picName)
+                    print("SENT TO TRASH:" + picList[picName][0] + "\\" + picName)
                     done = True
                 elif choice == '3':
                     # do nothing
                     done = True
                 else:
                     continue
-
-
-#when a duplicate is found, present the user with a choice of which to keep, the choice should show the originating directory
 
 
 #Present duplicates one at a time and ask the user to decide which to keep and which to put into trash
